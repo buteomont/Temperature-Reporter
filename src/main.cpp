@@ -7,7 +7,6 @@
 #include <PubSubClient.h>
 #include <ESPmDNS.h>
 #include <EEPROM.h>
-#include "esp_sleep.h"
 #include <OneWire.h>
 #include <DallasTemperature.h>
 #include "temperatureReporter.h"
@@ -87,6 +86,28 @@ char* generateMqttClientId(char* mqttId)
 float ctof(float c)
   {
   return c * 9.0 / 5.0 + 32.0;
+  }
+
+/* Flips the display to be black-on-white or vice versa */
+void flipDisplay()
+  {
+  static bool flipped=false;
+  if (settings.debug)
+    {
+    Serial.println("Flipping display colors");
+    }
+  if (flipped)
+    {
+    flipped=false;
+    u8g2.setBitmapMode(0); // Normal mode
+    u8g2.sendF("c", 0x0a6); // 0xa6 is the hardware command for 'Normal Display'
+    }
+  else
+    { 
+    flipped=true;
+    u8g2.setBitmapMode(1); // This flips the logic of the entire panel
+    u8g2.sendF("c", 0x0a7); // 0xa7 is the hardware command for 'Inverse Display'
+    }
   }
 
 uint8_t nybble(char c)
@@ -313,7 +334,7 @@ bool processCommand(String cmd)
         val[strlen(val)-1]=0; 
 
       stringToLower(nme); //make command name lowercase for easier matching
-      
+
       if (val!=NULL)
         {
         if (strcmp(val,"NULL")==0) //to nullify a value, you have to really mean it
@@ -1004,7 +1025,7 @@ void show(const char* text)
   u8g2.clearBuffer();
   
   // Start at the top left
-  int x = 0;
+  int x = 4; //Need a little margin
   int y = 8; // Starting Y (based on font height)
   int lineHeight = 10; 
   
@@ -1181,6 +1202,9 @@ void loop(void)
   
   while(millis()-now < settings.reportInterval * 1000UL)
     {
+    if (millis()%1800000 <100) //every 30 minutes
+      flipDisplay(); //flip the display colors for burn-in reduction
+    
     delay(100); //don't burn up the CPU
     checkForCommand(); //check for input in case something needs to be changed to make it work
     }
