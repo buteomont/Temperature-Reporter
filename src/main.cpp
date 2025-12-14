@@ -271,6 +271,21 @@ String getConfigCommand()
   else return "";
   }
 
+/* Convert a string to lowercase */
+void stringToLower(char* str)
+  {
+  if (str == NULL) 
+    {
+    return;
+    }
+
+  for (int i = 0; str[i] != '\0'; i++)
+    {
+    str[i] = (char)tolower((unsigned char)str[i]);
+    }
+  }
+
+
 bool processCommand(String cmd)
   {
   bool commandFound=true; //saves a lot of code
@@ -297,6 +312,8 @@ bool processCommand(String cmd)
       if (val!=NULL && strlen(val)>0 && val[strlen(val)-1]==13)
         val[strlen(val)-1]=0; 
 
+      stringToLower(nme); //make command name lowercase for easier matching
+      
       if (val!=NULL)
         {
         if (strcmp(val,"NULL")==0) //to nullify a value, you have to really mean it
@@ -355,14 +372,14 @@ bool processCommand(String cmd)
           strcpy(settings.tankSensorAddress,val);
           saveSettings();
           }
-        else if (strcmp(nme,"blowerRunThreshold")==0)
+        else if (strcmp(nme,"blowerrunthreshold")==0)
           {
           if (!val)
             strcpy(val,"0");
           settings.blowerRunThreshold=atoi(val);
           saveSettings();
           }
-        else if (strcmp(nme,"pumpRunThreshold")==0)
+        else if (strcmp(nme,"pumprunthreshold")==0)
           {
           if (!val)
             strcpy(val,"0");
