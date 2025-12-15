@@ -1126,8 +1126,8 @@ void initPorts()
   analogReadResolution(12);//  Set 12-bit resolution for all ADC reads
 
   // Set all ADC ranges to to 0-2.2V
-  analogSetPinAttenuation(PUMP_PIN, ADC_6db); 
-  analogSetPinAttenuation(BLOWER_PIN, ADC_6db); 
+  analogSetPinAttenuation(PUMP_PIN, ADC_11db); 
+  analogSetPinAttenuation(BLOWER_PIN, ADC_11db); 
   }
 
 
