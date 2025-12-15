@@ -1,6 +1,4 @@
-//The pin definitions below are for the Seeed Studio XIAO ESP32C3 board
-//They seem to be different from the ESP32 Dev board
-//#define SENSOR_POWER_PIN D4 //This pin powers the sensor on and off
+#define LED_BUILTIN 8 //This is for the built-in LED on the ESP32 board with the tiny display
 #define DISPLAY_TIMEOUT 30000 //milliseconds to keep the display on after last use
 #define SENSOR_PIN_A0 2 //The sensor is connected to ADC0
 #define TEMPERATURE_SENSOR_PIN 3 //The DS18S20 temperature sensors are connected to GPIO3

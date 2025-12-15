@@ -707,7 +707,7 @@ void incomingMqttHandler(char* reqTopic, byte* payload, unsigned int length)
       strcat(jsonStatus,"\", \"reportinterval\":\"");
       sprintf(tempbuf,"%d",settings.reportInterval);
       strcat(jsonStatus,tempbuf);
-      strcat(jsonStatus,", \"IPAddress\":\"");
+      strcat(jsonStatus,"\", \"IPAddress\":\"");
       strcat(jsonStatus,wifiClient.localIP().toString().c_str());
       strcat(jsonStatus,"\"");
       strcat(jsonStatus,"}");
@@ -1120,16 +1120,14 @@ void initPorts()
   {
   sensors.begin();
 
-  // pinMode(SENSOR_POWER_PIN, OUTPUT);   // set the sensor power pin as an output
-  // digitalWrite(SENSOR_POWER_PIN, LOW); // turn off the power to the sensor until we need it
+  pinMode(LED_BUILTIN, OUTPUT);   // LED will indicate active wifi connection
+  digitalWrite(LED_BUILTIN, HIGH); // it's active low
 
-  // 1. Set 12-bit resolution for all ADC reads
-  //analogReadResolution(12);
+  analogReadResolution(12);//  Set 12-bit resolution for all ADC reads
 
-  // Set all ADC ranges to to 0-3.3V
-  // analogSetPinAttenuation(SENSOR_PIN_A0, ADC_11db); 
-  // analogSetPinAttenuation(VCC_PIN_A1, ADC_11db); 
-  // analogSetPinAttenuation(BATTERY_PIN_A3, ADC_11db);
+  // Set all ADC ranges to to 0-2.2V
+  analogSetPinAttenuation(PUMP_PIN, ADC_6db); 
+  analogSetPinAttenuation(BLOWER_PIN, ADC_6db); 
   }
 
 
@@ -1205,150 +1203,15 @@ void loop(void)
     if (millis()%1800000 <100) //every 30 minutes
       flipDisplay(); //flip the display colors for burn-in reduction
     
-    delay(100); //don't burn up the CPU
+    if (WiFi.status() != WL_CONNECTED 
+        || !mqttClient.connected())
+      digitalWrite(LED_BUILTIN, HIGH); //turn off the LED
+    else
+      digitalWrite(LED_BUILTIN, LOW); //turn on the LED
+
+    mqttClient.loop(); //keep the mqtt connection alive
     checkForCommand(); //check for input in case something needs to be changed to make it work
+    delay(100); //don't burn up the CPU
     }
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// /**
-//   * Example for 72x40 pixel OLED display with SSD1306 controller
-//   * connected via I2C to an ESP32-C3 microcontroller
-//   * 
-//   * This example code is in the public domain.
-//   */
-// #include <Arduino.h>
-// #include <U8g2lib.h>
-// #include <Wire.h>
-
-// // there is no 72x40 constructor in u8g2 hence the 72x40 screen is
-// // mapped in the middle of the 132x64 pixel buffer of the SSD1306 controller
-// //U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, U8X8_PIN_NONE, 6, 5);
-// U8G2_SSD1306_72X40_ER_F_HW_I2C u8g2(U8G2_R2, U8X8_PIN_NONE, 6, 5); // yes there is!
-// #define MIN_WIDTH 1
-// #define MIN_HEIGHT 1
-// #define MAX_WIDTH 73
-// #define MAX_HEIGHT 41
-
-// int width = 72;
-// int height = 40;
-// // int xOffset = 28; // = (132-w)/2
-// // int yOffset = 25; // = (64-h)/2
-// int xOffset = 0;
-// int yOffset = 0;
-// int minWidth = 1;
-// int minHeight = 1;
-// int widthStep = 1;
-// int heightStep = 1;
-// int centerx=MAX_WIDTH/2;
-// int centery=MAX_HEIGHT/2;
-// int xStep=1;
-// int yStep=1;
-
-// void setup(void)
-//   {
-//   Serial.begin(115200);
-//   delay(1000);
-//   u8g2.begin();
-//   u8g2.setContrast(255); // set contrast to maximum 
-//   u8g2.setBusClock(400000); //400kHz I2C 
-//   u8g2.setFont(u8g2_font_ncenB10_tr);
-//   }
-
-// void loop(void)
-//   {
-//   if (width <= MIN_WIDTH)
-//     {
-//     widthStep=1;
-//     }
-//   if (width >= MAX_WIDTH)
-//     {
-//     widthStep=-1;
-//     }
-//   width+=widthStep;
-    
-//   if (height <= MIN_HEIGHT)
-//     {
-//     heightStep=1;
-//     }
-//   if (height >= MAX_HEIGHT)
-//     {
-//     heightStep=-1;
-//     }
-//   height+=heightStep;
-
-//   // random walk the box around
-//   int rnd=rand();
-//   if (rnd & 1) 
-//     {
-//     if (xOffset <= 0)
-//       {
-//       xStep=1;
-//       }
-//     if (xOffset >= (MAX_WIDTH-width))
-//       {
-//       xStep=-1;
-//       }
-//     xOffset+=xStep;
-//     }
-//   else
-//     {
-//     if (yOffset <= 0)
-//       {
-//       yStep=1;
-//       }
-//     if (yOffset >= (MAX_HEIGHT-height))
-//       {
-//       yStep=-1;
-//       }
-//     yOffset+=yStep;
-//     }
-
-//   u8g2.clearBuffer(); // clear the internal memory
-//   u8g2.drawFrame(xOffset+0, yOffset+0, width-1, height-1); //draw a frame around the border
-//   u8g2.setCursor(15, 25);
-//   u8g2.printf("%dx%d", width, height);
-//   u8g2.sendBuffer(); // transfer internal memory to the display
-//   Serial.print("Width:");
-//   Serial.print(width);
-//   Serial.print(" ");
-//   Serial.print("Height:");
-//   Serial.println(height);
-//   delay(50);
-//   }
