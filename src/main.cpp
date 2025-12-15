@@ -1118,14 +1118,14 @@ void initSettings()
 
 void initPorts()
   {
-  sensors.begin();
+  sensors.begin(); //start up the one-wire bus for the temperature sensors
 
   pinMode(LED_BUILTIN, OUTPUT);   // LED will indicate active wifi connection
   digitalWrite(LED_BUILTIN, HIGH); // it's active low
 
   analogReadResolution(12);//  Set 12-bit resolution for all ADC reads
 
-  // Set all ADC ranges to to 0-2.2V
+  // Set all ADC ranges to to 0-3.3V
   analogSetPinAttenuation(PUMP_PIN, ADC_11db); 
   analogSetPinAttenuation(BLOWER_PIN, ADC_11db); 
   }
