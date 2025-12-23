@@ -4,3 +4,10 @@
 .vscode/launch.json
 .vscode/ipch
 *.lck
+*.bak
+*.tmp
+*.swp
+*.log
+*.zip
+*.FCBak
+*.f3d

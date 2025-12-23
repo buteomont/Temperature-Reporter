@@ -990,6 +990,7 @@ void connectToWiFi()
       }
 
     unsigned long connectTimeout = millis() + WIFI_TIMEOUT_SECONDS*1000; // 30 second timeout
+    WiFi.setTxPower(WIFI_POWER_19_5dBm); //set max power for best range
     WiFi.begin(settings.ssid, settings.wifiPassword);
     //delay(1000);
     unsigned long lastDotTime = millis(); // For printing dots without blocking
